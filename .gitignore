@@ -1,0 +1,8 @@
+# Binary brand and platform assets are supplied separately for preview/rendering.
+# Keep these paths stable because the Remotion composition references them.
+public/assets/amazon.png
+public/assets/googleads.png
+public/assets/meta.png
+public/assets/shopify.png
+public/assets/souqmetrics-icon.png
+public/assets/tiktok.png

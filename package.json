@@ -1,0 +1,25 @@
+{
+  "name": "souqmetrics-video",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "remotion studio src/index.ts",
+    "preview": "remotion studio src/index.ts",
+    "build": "remotion bundle src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.365",
+    "@remotion/google-fonts": "4.0.365",
+    "@remotion/media-utils": "4.0.365",
+    "@remotion/renderer": "4.0.365",
+    "remotion": "4.0.365",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.7",
+    "typescript": "5.9.2"
+  }
+}

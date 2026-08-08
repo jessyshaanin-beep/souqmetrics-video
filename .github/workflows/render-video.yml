@@ -1,0 +1,111 @@
+name: Render SouqMetrics Video
+
+on:
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Prepare Remotion assets
+        run: |
+          mkdir -p public/assets
+
+          cp shopify.png public/assets/shopify.png
+          cp meta.png public/assets/meta.png
+          cp googleads.png public/assets/googleads.png
+          cp tiktok.png public/assets/tiktok.png
+          cp amazon.png public/assets/amazon.png
+          cp souqmetrics-icon.png public/assets/souqmetrics-icon.png
+
+          echo "Assets ready:"
+          ls -lah public/assets
+
+      - name: Install Remotion browser
+        run: npx remotion browser ensure
+
+      - name: Create output folders
+        run: mkdir -p output/stills
+
+      - name: Render video
+        run: |
+          npx remotion render \
+            src/index.ts \
+            SouqMetricsVerticalAd \
+            output/souqmetrics-preview.mp4 \
+            --codec=h264 \
+            --width=1080 \
+            --height=1350 \
+            --fps=30 \
+            --concurrency=2
+
+      - name: Render still at 1 second
+        run: |
+          npx remotion still \
+            src/index.ts \
+            SouqMetricsVerticalAd \
+            output/stills/frame-001s.png \
+            --frame=30 \
+            --width=1080 \
+            --height=1350
+
+      - name: Render still at 4 seconds
+        run: |
+          npx remotion still \
+            src/index.ts \
+            SouqMetricsVerticalAd \
+            output/stills/frame-004s.png \
+            --frame=120 \
+            --width=1080 \
+            --height=1350
+
+      - name: Render still at 8 seconds
+        run: |
+          npx remotion still \
+            src/index.ts \
+            SouqMetricsVerticalAd \
+            output/stills/frame-008s.png \
+            --frame=240 \
+            --width=1080 \
+            --height=1350
+
+      - name: Render still at 13 seconds
+        run: |
+          npx remotion still \
+            src/index.ts \
+            SouqMetricsVerticalAd \
+            output/stills/frame-013s.png \
+            --frame=390 \
+            --width=1080 \
+            --height=1350
+
+      - name: Show rendered files
+        run: |
+          echo "Rendered files:"
+          find output -type f -exec ls -lh {} \;
+
+      - name: Upload preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: souqmetrics-preview
+          path: |
+            output/souqmetrics-preview.mp4
+            output/stills/frame-001s.png
+            output/stills/frame-004s.png
+            output/stills/frame-008s.png
+            output/stills/frame-013s.png
+          retention-days: 7
+          if-no-files-found: error

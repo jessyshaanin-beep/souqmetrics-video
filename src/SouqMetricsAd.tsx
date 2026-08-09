@@ -63,12 +63,13 @@ const PlatformCube: React.FC<{source: Source; index: number}> = ({source, index}
 const MainCube: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const enter = spring({frame: frame - 24, fps, config: {damping: 18, stiffness: 90, mass: 1}});
+  const enter = spring({frame: frame - 4, fps, config: {damping: 18, stiffness: 90, mass: 1}});
   const processing = interpolate(frame, [145, 165, 205, 225], [0, 1, 0.55, 0], clamp);
   const final = interpolate(frame, [326, 360], [0, 1], clamp);
   const texture = useTexture(staticFile('assets/souqmetrics-icon.png'));
   texture.colorSpace = THREE.SRGBColorSpace;
-  const scale = enter * interpolate(processing, [0, 1], [1, 1.045]) * interpolate(final, [0, 1], [1, 0.72]);
+  const cardFocus = interpolate(frame, [205, 240, 315, 340], [1, 0.82, 0.82, 1], clamp);
+  const scale = enter * interpolate(processing, [0, 1], [1, 1.045]) * cardFocus * interpolate(final, [0, 1], [1, 0.72]);
   return (
     <group position={[0, interpolate(final, [0, 1], [0, 3.15]), 0]} rotation={[-0.12 + Math.sin(frame / 65) * 0.035, -0.27 + frame * 0.0018, 0.025 + Math.sin(frame / 80) * 0.02]} scale={scale}>
       <RoundedBox args={[3.0, 3.0, 3.0]} radius={0.38} smoothness={8} castShadow receiveShadow>
@@ -85,9 +86,10 @@ const MainCube: React.FC = () => {
 
 const Scene: React.FC = () => {
   const frame = useCurrentFrame();
-  const cameraX = Math.sin(frame / 150) * 0.1;
+  const cameraX = Math.sin(frame / 150) * 0.08;
+  const shadowOpacity = interpolate(frame, [0, 205, 240, 315, 340], [0.13, 0.13, 0.055, 0.055, 0.1], clamp);
   return (
-    <ThreeCanvas width={1080} height={1350} camera={{position: [cameraX, 0.08, 9.2], fov: 42, near: 0.1, far: 100}} shadows gl={{antialias: true, alpha: true}}>
+    <ThreeCanvas width={1080} height={1350} camera={{position: [cameraX, 0.08, 10.1], fov: 42, near: 0.1, far: 100}} shadows gl={{antialias: true, alpha: true}}>
       <color attach="background" args={['#F5F2ED']} />
       <ambientLight intensity={2.0} color="#fffaf2" />
       <directionalLight position={[-4.5, 7, 8]} intensity={4.8} color="#fffdf8" castShadow shadow-mapSize={[2048, 2048]} shadow-bias={-0.0004} />
@@ -95,7 +97,7 @@ const Scene: React.FC = () => {
       <pointLight position={[-5, 1, 5]} intensity={1.0} color="#32C8AC" distance={12} />
       <mesh position={[0, 0, -3.2]} receiveShadow>
         <planeGeometry args={[28, 28]} />
-        <shadowMaterial color="#655f57" transparent opacity={0.16} />
+        <shadowMaterial color="#655f57" transparent opacity={shadowOpacity} />
       </mesh>
       <Suspense fallback={null}>
         {sources.map((source, index) => <PlatformCube key={source.name} source={source} index={index} />)}
